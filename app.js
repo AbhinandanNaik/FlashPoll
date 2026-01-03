@@ -9,7 +9,7 @@ const db = require('./database');
 console.log("4. Modules loaded. Starting server setup...");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.set('view engine', 'ejs');
