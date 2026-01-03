@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FlashPoll - Create</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ FlashPoll</h1>
+        <form action="/create" method="POST">
+            <label>Question:</label>
+            <input type="text" name="question" placeholder="e.g., Best Programming Language?" required>
+            
+            <label>Options (one per line):</label>
+            <textarea name="options" rows="5" placeholder="JavaScript&#10;Python&#10;Java" required></textarea>
+            
+            <button type="submit">Create Poll</button>
+        </form>
+    </div>
+</body>
+</html>

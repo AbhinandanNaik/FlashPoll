@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FlashPoll - Vote</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1><%= poll.question %></h1>
+        
+        <input type="text" value="" id="shareUrl" style="position: absolute; left: -9999px;">
+
+        <div class="results">
+            <% options.forEach(option => { %>
+                <% const percent = totalVotes === 0 ? 0 : Math.round((option.votes / totalVotes) * 100); %>
+                
+                <div class="option-card">
+                    <div class="option-header">
+                        <strong><%= option.text %></strong>
+                        <span><%= option.votes %> votes (<%= percent %>%)</span>
+                    </div>
+                    
+                    <div class="progress-bg">
+                        <div class="progress-fill" style="width: <%= percent %>%;"></div>
+                    </div>
+                    <form action="/vote/<%= poll.id %>" method="POST">
+                        <input type="hidden" name="optionId" value="<%= option.id %>">
+                        <button type="submit" class="vote-btn">Vote</button>
+                    </form>
+                </div>
+            <% }) %>
+        </div>
+
+        <div class="footer">
+            <button onclick="copyLink()" style="background-color: #0984e3; margin-bottom: 10px;">
+                🔗 Copy Share Link
+            </button>
+            <a href="/">Create New Poll</a>
+        </div>
+    </div>
+
+    <script>
+        function copyLink() {
+            // 1. Get the current page URL
+            const url = window.location.href;
+            
+            // 2. Use the modern Clipboard API to copy it
+            navigator.clipboard.writeText(url).then(() => {
+                // 3. Give feedback to the user
+                alert("Link Copied! Send it to your friends.");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
