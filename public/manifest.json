@@ -1,0 +1,16 @@
+{
+  "name": "FlashPoll Enterprise",
+  "short_name": "FlashPoll",
+  "description": "Real-time enterprise polling application.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/x-icon"
+    }
+  ]
+}
