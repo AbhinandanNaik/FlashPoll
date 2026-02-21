@@ -150,3 +150,28 @@ exports.votePoll = catchAsync(async (req, res, next) => {
 
   res.redirect(`/poll/${pollId}`);
 });
+
+exports.getDashboard = catchAsync(async (req, res) => {
+  const polls = await prisma.poll.findMany({
+    where: { creatorId: req.user.id },
+    include: { options: true },
+  });
+
+  const formattedPolls = polls.map((poll) => {
+    const totalVotes = poll.options.reduce((acc, opt) => acc + opt.votes, 0);
+    return { ...poll, totalVotes };
+  });
+
+  res.render('dashboard', { polls: formattedPolls });
+});
+
+exports.deletePoll = catchAsync(async (req, res, next) => {
+  const pollId = req.params.id;
+
+  const poll = await prisma.poll.findUnique({ where: { id: pollId } });
+  if (!poll) return next(new AppError('Poll not found', 404));
+  if (poll.creatorId !== req.user.id) return next(new AppError('Unauthorized', 403));
+
+  await prisma.poll.delete({ where: { id: pollId } });
+  res.redirect('/dashboard');
+});

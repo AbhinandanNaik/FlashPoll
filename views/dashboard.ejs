@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+    <main class="container" style="max-width: 900px; padding-top: 4rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+            <div>
+                <h1
+                    style="font-size: 2.5rem; margin-bottom: 0.5rem; font-family: var(--font-display); background: var(--gradient-primary); -webkit-background-clip: text; color: transparent;">
+                    Your Dashboard</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">Manage and analyze polls you've created.</p>
+            </div>
+            <a href="/" class="btn btn-primary">+ Create New Poll</a>
+        </div>
+
+        <% if (polls.length===0) { %>
+            <div class="card" style="text-align: center; padding: 4rem 2rem; border-radius: var(--radius-lg);">
+                <svg style="width: 48px; height: 48px; color: var(--text-muted); margin: 0 auto 1rem auto;" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                </svg>
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">No polls created yet</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">It looks like you haven't created any polls.
+                    Get started by making your first one!</p>
+                <a href="/" class="btn btn-primary">Create Your First Poll</a>
+            </div>
+            <% } else { %>
+                <div style="display: grid; gap: 1.5rem;">
+                    <% polls.forEach(poll=> { %>
+                        <div class="card"
+                            style="border-radius: var(--radius-md); padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease;">
+                            <div style="flex: 1;">
+                                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem;">
+                                    <a href="/poll/<%= poll.id %>"
+                                        style="color: var(--text-main); text-decoration: none;">
+                                        <%= poll.question %>
+                                    </a>
+                                </h3>
+                                <div style="display: flex; gap: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                                    <span><strong>
+                                            <%= poll.totalVotes %>
+                                        </strong> total votes</span>
+                                    <% if (poll.allowMultiple) { %>
+                                        <span style="display: flex; align-items: center; gap: 0.25rem;">
+                                            <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Multiple Choice
+                                        </span>
+                                        <% } %>
+                                            <% if (poll.expiresAt) { %>
+                                                <span style="display: flex; align-items: center; gap: 0.25rem;">
+                                                    <svg style="width: 14px; height: 14px;" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    Expires: <%= new Date(poll.expiresAt).toLocaleDateString() %>
+                                                </span>
+                                                <% } %>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.75rem;">
+                                <a href="/poll/<%= poll.id %>" class="btn btn-secondary"
+                                    style="padding: 0.5rem 1rem; font-size: 0.9rem;">View</a>
+                                <form action="/poll/<%= poll.id %>/delete" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this poll?');">
+                                    <button type="submit" class="btn"
+                                        style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem 1rem; font-size: 0.9rem; cursor: pointer;">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } %>
+    </main>
+    <%- include('partials/footer') %>
