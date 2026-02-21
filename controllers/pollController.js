@@ -2,6 +2,9 @@ const prisma = require('../config/db');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const QRCode = require('qrcode');
+const NodeCache = require('node-cache');
+
+const pollCache = new NodeCache({ stdTTL: 60 });
 
 exports.getHome = (req, res) => {
   res.render('index');
@@ -43,20 +46,25 @@ exports.createPoll = catchAsync(async (req, res) => {
 exports.getPoll = catchAsync(async (req, res, next) => {
   const pollId = req.params.id;
 
-  const poll = await prisma.poll.findUnique({
-    where: { id: pollId },
-    include: { options: true },
-  });
+  let poll = pollCache.get(pollId);
+
+  if (!poll) {
+    poll = await prisma.poll.findUnique({
+      where: { id: pollId },
+      include: { options: true },
+    });
+    if (poll) {
+      pollCache.set(pollId, poll);
+    }
+  }
 
   if (!poll) {
     return next(new AppError('Poll not found with that ID', 404));
   }
 
-  // Check Expiration
   const now = new Date();
   const isExpired = poll.expiresAt && now > poll.expiresAt;
 
-  // Integrity Check
   const clientIp = req.ip || req.connection.remoteAddress;
   const cookieName = `voted_${pollId}`;
   let hasVoted = false;
@@ -110,7 +118,6 @@ exports.votePoll = catchAsync(async (req, res, next) => {
     return next(new AppError('This poll does not allow multiple selections.', 403));
   }
 
-  // Integrity Check
   const clientIp = req.ip || req.connection.remoteAddress;
   const cookieName = `voted_${pollId}`;
 
@@ -148,6 +155,8 @@ exports.votePoll = catchAsync(async (req, res, next) => {
     signed: true,
   });
 
+  pollCache.del(pollId);
+
   res.redirect(`/poll/${pollId}`);
 });
 
@@ -173,5 +182,7 @@ exports.deletePoll = catchAsync(async (req, res, next) => {
   if (poll.creatorId !== req.user.id) return next(new AppError('Unauthorized', 403));
 
   await prisma.poll.delete({ where: { id: pollId } });
+  pollCache.del(pollId);
+
   res.redirect('/dashboard');
 });
