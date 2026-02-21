@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Poll {
+  id       String   @id @default(uuid())
+  question String
+  options  Option[]
+
+  @@map("polls")
+}
+
+model Option {
+  id      Int    @id @default(autoincrement())
+  pollId  String @map("poll_id")
+  text    String
+  votes   Int    @default(0)
+  poll    Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
