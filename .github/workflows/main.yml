@@ -1,0 +1,49 @@
+name: FlashPoll Enterprise CI/CD
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  quality-assurance:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: 'file:./dev.db'
+      JWT_SECRET: 'test-secret'
+      COOKIE_SECRET: 'test-cookie-secret'
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install Application Dependencies
+        run: npm ci
+
+      - name: Execute ESLint Strict Analysis
+        run: npm run lint
+
+      - name: Provision Prisma ORM Architecture
+        run: npx prisma generate && npx prisma db push
+
+      - name: Provision Headless Chromium Drivers
+        run: npx playwright install chromium --with-deps
+
+      - name: Execute End-to-End Test Verification
+        run: npx playwright test
+
+      - name: Archive Playwright Artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-execution-report
+          path: playwright-report/
+          retention-days: 7
