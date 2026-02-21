@@ -22,10 +22,14 @@ const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
+const cookieParser = require('cookie-parser');
 
 // === Middlewares ===
 // Security Headers
 app.use(helmet());
+
+// Cookie Parser
+app.use(cookieParser(process.env.COOKIE_SECRET || 'flashpoll-enterprise-secret-key'));
 
 // Enable CORS
 app.use(cors());

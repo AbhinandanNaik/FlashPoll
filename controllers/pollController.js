@@ -44,23 +44,58 @@ exports.getPoll = catchAsync(async (req, res, next) => {
     return next(new AppError('Poll not found with that ID', 404));
   }
 
+  // Integrity Check
+  const clientIp = req.ip || req.connection.remoteAddress;
+  const cookieName = `voted_${pollId}`;
+  let hasVoted = false;
+
+  if (req.signedCookies[cookieName]) {
+    hasVoted = true;
+  } else {
+    const existingVote = await prisma.voteIP.findUnique({
+      where: { pollId_ip: { pollId, ip: clientIp } },
+    });
+    if (existingVote) hasVoted = true;
+  }
+
   const url = `${req.protocol}://${req.get('host')}/poll/${poll.id}`;
   const qrCodeDataUrl = await QRCode.toDataURL(url, { width: 200, margin: 1 });
   const totalVotes = poll.options.reduce((acc, opt) => acc + opt.votes, 0);
 
-  res.render('poll', { poll, options: poll.options, totalVotes, qrCodeDataUrl, url });
+  res.render('poll', { poll, options: poll.options, totalVotes, qrCodeDataUrl, url, hasVoted });
 });
 
-exports.votePoll = catchAsync(async (req, res) => {
+exports.votePoll = catchAsync(async (req, res, next) => {
   const optionId = req.body.optionId;
   const pollId = req.params.id;
+
+  // Integrity Check
+  const clientIp = req.ip || req.connection.remoteAddress;
+  const cookieName = `voted_${pollId}`;
+
+  // Check if they already voted via cookie
+  if (req.signedCookies[cookieName]) {
+    return next(new AppError('You have already voted on this poll.', 403));
+  }
+
+  // Check if they already voted via IP in Database
+  const existingVote = await prisma.voteIP.findUnique({
+    where: { pollId_ip: { pollId, ip: clientIp } },
+  });
+  if (existingVote) {
+    return next(new AppError('You have already voted on this poll from this IP address.', 403));
+  }
+
+  // Register the vote locking their IP
+  await prisma.voteIP.create({
+    data: { pollId, ip: clientIp },
+  });
 
   await prisma.option.update({
     where: { id: parseInt(optionId) },
     data: { votes: { increment: 1 } },
   });
 
-  // Fetch updated poll state for realtime broadcast
   const updatedPoll = await prisma.poll.findUnique({
     where: { id: pollId },
     include: { options: true },
@@ -68,6 +103,13 @@ exports.votePoll = catchAsync(async (req, res) => {
   const totalVotes = updatedPoll.options.reduce((acc, opt) => acc + opt.votes, 0);
 
   req.io.to(pollId).emit('vote_update', { options: updatedPoll.options, totalVotes });
+
+  // Set signed cookie for 30 days
+  res.cookie(cookieName, 'true', {
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    signed: true,
+  });
 
   res.redirect(`/poll/${pollId}`);
 });

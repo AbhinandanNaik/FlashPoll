@@ -11,6 +11,7 @@ model Poll {
   id       String   @id @default(uuid())
   question String
   options  Option[]
+  voteIPs  VoteIP[]
 
   @@map("polls")
 }
@@ -23,4 +24,15 @@ model Option {
   poll    Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
 
   @@map("options")
+}
+
+model VoteIP {
+  id        Int      @id @default(autoincrement())
+  pollId    String   @map("poll_id")
+  ip        String
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([pollId, ip])
+  @@map("vote_ips")
 }

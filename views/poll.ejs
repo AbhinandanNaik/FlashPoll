@@ -14,7 +14,12 @@
             overflow: hidden;
         }
 
-        .option-label:hover {
+        .option-label-voted {
+            cursor: default;
+            border-color: var(--border-color);
+        }
+
+        .option-label:not(.option-label-voted):hover {
             border-color: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1);
@@ -165,16 +170,25 @@
                 </p>
             </div>
 
-            <form action="/vote/<%= poll.id %>" method="POST">
+            <% if (hasVoted) { %>
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div
+                        style="background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 1rem; border-radius: var(--radius-md); font-weight: 600; font-size: 1.1rem; display: inline-flex; align-items: center;">
+                        <svg style="width: 24px; height: 24px; margin-right: 0.5rem;" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        You have already voted on this poll.
+                    </div>
+                </div>
                 <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1rem;">
                     <% options.forEach((opt)=> { %>
                         <% const percent=totalVotes===0 ? 0 : Math.round((opt.votes / totalVotes) * 100); %>
-                            <label class="option-label" id="label-<%= opt.id %>">
+                            <div class="option-label option-label-voted" id="label-<%= opt.id %>">
                                 <div class="progress-bar" id="progress-<%= opt.id %>" style="width: <%= percent %>%">
                                 </div>
                                 <div class="option-content">
-                                    <input type="radio" name="optionId" value="<%= opt.id %>" required>
-                                    <div class="custom-radio"></div>
                                     <span class="option-text">
                                         <%= opt.text %>
                                     </span>
@@ -182,15 +196,43 @@
                                         <%= opt.votes %> votes (<%= percent %>%)
                                     </span>
                                 </div>
-                            </label>
+                            </div>
                             <% }) %>
                 </div>
                 <div class="action-buttons">
-                    <button type="submit" class="btn btn-primary btn-vote">Submit Vote</button>
-                    <button type="button" class="btn btn-secondary"
-                        onclick="document.getElementById('shareModal').style.display='flex'">Share</button>
+                    <a href="/" class="btn btn-secondary" style="flex: 2; height: 3.5rem;">Create New Poll</a>
+                    <button type="button" class="btn btn-primary"
+                        onclick="document.getElementById('shareModal').style.display='flex'"
+                        style="flex: 1; height: 3.5rem;">Share</button>
                 </div>
-            </form>
+                <% } else { %>
+                    <form action="/vote/<%= poll.id %>" method="POST">
+                        <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1rem;">
+                            <% options.forEach((opt)=> { %>
+                                <% const percent=totalVotes===0 ? 0 : Math.round((opt.votes / totalVotes) * 100); %>
+                                    <label class="option-label" id="label-<%= opt.id %>">
+                                        <div class="progress-bar" id="progress-<%= opt.id %>"
+                                            style="width: <%= percent %>%"></div>
+                                        <div class="option-content">
+                                            <input type="radio" name="optionId" value="<%= opt.id %>" required>
+                                            <div class="custom-radio"></div>
+                                            <span class="option-text">
+                                                <%= opt.text %>
+                                            </span>
+                                            <span class="option-votes" id="vote-count-<%= opt.id %>">
+                                                <%= opt.votes %> votes (<%= percent %>%)
+                                            </span>
+                                        </div>
+                                    </label>
+                                    <% }) %>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary btn-vote">Submit Vote</button>
+                            <button type="button" class="btn btn-secondary"
+                                onclick="document.getElementById('shareModal').style.display='flex'">Share</button>
+                        </div>
+                    </form>
+                    <% } %>
         </div>
     </main>
 
@@ -206,7 +248,8 @@
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <input type="text" id="shareUrl" value="<%= url %>" readonly class="form-input"
                     style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); color: var(--text-main);">
-                <button onclick="copyLink()" class="btn btn-primary" id="copyBtn">Copy</button>
+                <button onclick="copyLink()" class="btn btn-primary" id="copyBtn"
+                    style="padding: 0.75rem 1.5rem;">Copy</button>
             </div>
         </div>
     </div>
@@ -224,10 +267,14 @@
                 const percent = data.totalVotes === 0 ? 0 : Math.round((opt.votes / data.totalVotes) * 100);
 
                 const voteSpan = document.getElementById(`vote-count-${opt.id}`);
-                if (voteSpan) voteSpan.innerText = `${opt.votes} votes (${percent}%)`;
+                if (voteSpan) {
+                    voteSpan.innerText = `${opt.votes} votes (${percent}%)`;
+                }
 
                 const pb = document.getElementById(`progress-${opt.id}`);
-                if (pb) pb.style.width = `${percent}%`;
+                if (pb) {
+                    pb.style.width = `${percent}%`;
+                }
             });
         });
 
