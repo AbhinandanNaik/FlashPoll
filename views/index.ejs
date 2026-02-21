@@ -1,23 +1,200 @@
 <%- include('partials/header') %>
-    <main class="container">
-        <div class="card">
-            <h1 style="margin-bottom: 2rem; text-align: center;">Enterprise FlashPoll</h1>
-            <form action="/create" method="POST">
-                <div style="margin-bottom: 1.5rem;">
-                    <label for="question" style="display:block; margin-bottom: 0.5rem; font-weight: 500;">Poll
-                        Question</label>
-                    <input type="text" id="question" name="question" placeholder="e.g. Best JavaScript Framework?"
-                        required
-                        style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); color: var(--text-main); font-family: var(--font-sans); outline: none;">
-                </div>
-                <div style="margin-bottom: 2rem;">
-                    <label for="options" style="display:block; margin-bottom: 0.5rem; font-weight: 500;">Options (One
-                        per line)</label>
-                    <textarea id="options" name="options" rows="5" placeholder="React&#10;Vue&#10;Svelte" required
-                        style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color); color: var(--text-main); font-family: var(--font-sans); outline: none; resize: vertical;"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Poll</button>
-            </form>
+    <style>
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-color) 0%, rgba(79, 70, 229, 0.1) 100%);
+            min-height: calc(100vh - 40px);
+            /* Account for padding */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            filter: blur(120px);
+            opacity: 0.15;
+            border-radius: 50%;
+            z-index: 0;
+            top: -150px;
+            right: -100px;
+            animation: drift 10s infinite alternate ease-in-out;
+        }
+
+        .hero-blob-2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--secondary);
+            filter: blur(100px);
+            opacity: 0.15;
+            border-radius: 50%;
+            z-index: 0;
+            bottom: -100px;
+            left: -100px;
+            animation: drift 12s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(40px, 40px) scale(1.1);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            /* Fallback */
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        [data-theme='dark'] .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        /* Semi-transparent inputs inside glass */
+        .form-input,
+        .form-textarea {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        [data-theme='dark'] .form-input,
+        [data-theme='dark'] .form-textarea {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            margin-top: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .glass-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+
+    <div class="hero-section">
+        <div class="hero-blob"></div>
+        <div class="hero-blob-2"></div>
+
+        <div class="hero-content">
+            <h1 class="hero-title">Instant Polling, <br />Enterprise Grade.</h1>
+            <p class="hero-subtitle">Create beautiful, real-time polls in seconds. Share the link and watch the votes
+                roll in instantly.</p>
+
+            <div class="glass-card">
+                <form action="/create" method="POST">
+                    <div class="form-group">
+                        <label for="question" class="form-label">What do you want to ask?</label>
+                        <input type="text" id="question" name="question" class="form-input"
+                            placeholder="e.g., Which framework should we use for the next project?" required
+                            autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="options" class="form-label">Poll Options</label>
+                        <textarea id="options" name="options" rows="4" class="form-textarea"
+                            placeholder="React&#10;Vue.js&#10;Svelte&#10;Angular" required></textarea>
+                        <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Enter one option
+                            per line.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-submit">Generate FlashPoll &rarr;</button>
+                </form>
+            </div>
         </div>
-    </main>
+    </div>
     <%- include('partials/footer') %>
