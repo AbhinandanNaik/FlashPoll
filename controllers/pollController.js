@@ -1,6 +1,7 @@
 const prisma = require('../config/db');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
+const QRCode = require('qrcode');
 
 exports.getHome = (req, res) => {
   res.render('index');
@@ -43,8 +44,11 @@ exports.getPoll = catchAsync(async (req, res, next) => {
     return next(new AppError('Poll not found with that ID', 404));
   }
 
+  const url = `${req.protocol}://${req.get('host')}/poll/${poll.id}`;
+  const qrCodeDataUrl = await QRCode.toDataURL(url, { width: 200, margin: 1 });
   const totalVotes = poll.options.reduce((acc, opt) => acc + opt.votes, 0);
-  res.render('poll', { poll, options: poll.options, totalVotes });
+
+  res.render('poll', { poll, options: poll.options, totalVotes, qrCodeDataUrl, url });
 });
 
 exports.votePoll = catchAsync(async (req, res) => {
