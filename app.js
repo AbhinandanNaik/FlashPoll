@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const pollRoutes = require('./routes/pollRoutes');
@@ -14,5 +15,5 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', pollRoutes);
 
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });

@@ -4,14 +4,22 @@
   "description": "Generate Poll anywhere and anytime",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^17.3.1",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "sqlite3": "^5.1.7",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^10.0.1",
+    "prettier": "^3.8.1"
   }
 }

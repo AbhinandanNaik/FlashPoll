@@ -1,15 +1,74 @@
-body { font-family: sans-serif; background: #f4f4f9; display: flex; justify-content: center; padding-top: 50px; }
-.container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 400px; }
-h1 { text-align: center; color: #333; }
-input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;}
-button { width: 100%; padding: 10px; background: #6c5ce7; color: white; border: none; border-radius: 4px; cursor: pointer; }
-button:hover { background: #5b4cc4; }
+body {
+  font-family: sans-serif;
+  background: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+}
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 400px;
+}
+h1 {
+  text-align: center;
+  color: #333;
+}
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+button {
+  width: 100%;
+  padding: 10px;
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background: #5b4cc4;
+}
 
 /* Result Bars */
-.option-card { margin-bottom: 20px; }
-.option-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
-.progress-bg { background: #eee; height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 10px; }
-.progress-fill { background: #00b894; height: 100%; }
-.vote-btn { background: #dfe6e9; color: #333; font-size: 0.8rem; padding: 5px; }
-.vote-btn:hover { background: #b2bec3; }
-.footer { text-align: center; margin-top: 20px; }
+.option-card {
+  margin-bottom: 20px;
+}
+.option-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+.progress-bg {
+  background: #eee;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.progress-fill {
+  background: #00b894;
+  height: 100%;
+}
+.vote-btn {
+  background: #dfe6e9;
+  color: #333;
+  font-size: 0.8rem;
+  padding: 5px;
+}
+.vote-btn:hover {
+  background: #b2bec3;
+}
+.footer {
+  text-align: center;
+  margin-top: 20px;
+}
