@@ -1,57 +1,34 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>FlashPoll - Vote</title>
-    <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-    <div class="container">
-        <h1><%= poll.question %></h1>
-        
-        <input type="text" value="" id="shareUrl" style="position: absolute; left: -9999px;">
+<%- include('partials/header') %>
+    <main class="container">
+        <div class="card">
+            <h1 style="margin-bottom: 0.5rem;">
+                <%= poll.question %>
+            </h1>
+            <h3 style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 500;">Total Votes: <%= totalVotes %>
+            </h3>
 
-        <div class="results">
-            <% options.forEach(option => { %>
-                <% const percent = totalVotes === 0 ? 0 : Math.round((option.votes / totalVotes) * 100); %>
-                
-                <div class="option-card">
-                    <div class="option-header">
-                        <strong><%= option.text %></strong>
-                        <span><%= option.votes %> votes (<%= percent %>%)</span>
-                    </div>
-                    
-                    <div class="progress-bg">
-                        <div class="progress-fill" style="width: <%= percent %>%;"></div>
-                    </div>
-                    <form action="/vote/<%= poll.id %>" method="POST">
-                        <input type="hidden" name="optionId" value="<%= option.id %>">
-                        <button type="submit" class="vote-btn">Vote</button>
-                    </form>
+            <form action="/vote/<%= poll.id %>" method="POST">
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                    <% options.forEach((opt)=> { %>
+                        <label
+                            style="display: flex; align-items: center; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); background: var(--bg-color);">
+                            <input type="radio" name="optionId" value="<%= opt.id %>" required
+                                style="margin-right: 1rem; transform: scale(1.2); accent-color: var(--primary);">
+                            <span style="flex-grow: 1; font-weight: 500;">
+                                <%= opt.text %>
+                            </span>
+                            <span style="font-weight: 600; color: var(--primary);">
+                                <%= opt.votes %> votes
+                            </span>
+                        </label>
+                        <% }) %>
                 </div>
-            <% }) %>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Cast Vote</button>
+                    <a href="/" class="btn"
+                        style="border: 1px solid var(--border-color); color: var(--text-main);">Create New Poll</a>
+                </div>
+            </form>
         </div>
-
-        <div class="footer">
-            <button onclick="copyLink()" style="background-color: #0984e3; margin-bottom: 10px;">
-                🔗 Copy Share Link
-            </button>
-            <a href="/">Create New Poll</a>
-        </div>
-    </div>
-
-    <script>
-        function copyLink() {
-            // 1. Get the current page URL
-            const url = window.location.href;
-            
-            // 2. Use the modern Clipboard API to copy it
-            navigator.clipboard.writeText(url).then(() => {
-                // 3. Give feedback to the user
-                alert("Link Copied! Send it to your friends.");
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
-        }
-    </script>
-</body>
-</html>
+    </main>
+    <%- include('partials/footer') %>
