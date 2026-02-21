@@ -8,10 +8,12 @@ datasource db {
 }
 
 model Poll {
-  id       String   @id @default(uuid())
-  question String
-  options  Option[]
-  voteIPs  VoteIP[]
+  id            String    @id @default(uuid())
+  question      String
+  options       Option[]
+  voteIPs       VoteIP[]
+  allowMultiple Boolean   @default(false)
+  expiresAt     DateTime?
 
   @@map("polls")
 }

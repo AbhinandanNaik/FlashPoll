@@ -1,213 +1,82 @@
 <%- include('partials/header') %>
-    <style>
-        .hero-section {
-            position: relative;
-            overflow: hidden;
-            padding: 6rem 1rem;
-            text-align: center;
-            background: linear-gradient(135deg, var(--bg-color) 0%, rgba(79, 70, 229, 0.1) 100%);
-            min-height: calc(100vh - 40px);
-            /* Account for padding */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: var(--primary);
-            filter: blur(120px);
-            opacity: 0.15;
-            border-radius: 50%;
-            z-index: 0;
-            top: -150px;
-            right: -100px;
-            animation: drift 10s infinite alternate ease-in-out;
-        }
-
-        .hero-blob-2 {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: var(--secondary);
-            filter: blur(100px);
-            opacity: 0.15;
-            border-radius: 50%;
-            z-index: 0;
-            bottom: -100px;
-            left: -100px;
-            animation: drift 12s infinite alternate-reverse ease-in-out;
-        }
-
-        @keyframes drift {
-            from {
-                transform: translate(0, 0) scale(1);
-            }
-
-            to {
-                transform: translate(40px, 40px) scale(1.1);
-            }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .hero-title {
-            font-size: 4.5rem;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1.1;
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            margin-bottom: 3rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .glass-card {
-            background: var(--card-bg);
-            /* Fallback */
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-            border-radius: var(--radius-lg);
-            padding: 3rem;
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: left;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        [data-theme='dark'] .glass-card {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .glass-card:hover {
-            transform: translateY(-8px);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .form-input,
-        .form-textarea {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            background: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-sans);
-            outline: none;
-            transition: var(--transition);
-        }
-
-        /* Semi-transparent inputs inside glass */
-        .form-input,
-        .form-textarea {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        [data-theme='dark'] .form-input,
-        [data-theme='dark'] .form-textarea {
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        .form-input:focus,
-        .form-textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .form-textarea {
-            resize: vertical;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-            margin-top: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 3rem;
-            }
-
-            .glass-card {
-                padding: 2rem;
-            }
-        }
-    </style>
-
-    <div class="hero-section">
-        <div class="hero-blob"></div>
-        <div class="hero-blob-2"></div>
-
-        <div class="hero-content">
-            <h1 class="hero-title">Instant Polling, <br />Enterprise Grade.</h1>
-            <p class="hero-subtitle">Create beautiful, real-time polls in seconds. Share the link and watch the votes
-                roll in instantly.</p>
-
-            <div class="glass-card">
-                <form action="/create" method="POST">
-                    <div class="form-group">
-                        <label for="question" class="form-label">What do you want to ask?</label>
-                        <input type="text" id="question" name="question" class="form-input"
-                            placeholder="e.g., Which framework should we use for the next project?" required
-                            autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Poll Options</label>
-                        <div id="options-container">
-                            <div class="option-item">
-                                <span class="drag-handle">☰</span>
-                                <input type="text" name="options" class="form-input" placeholder="Option 1" required>
-                                <button type="button" class="btn-remove" aria-label="Remove option">&times;</button>
-                            </div>
-                            <div class="option-item">
-                                <span class="drag-handle">☰</span>
-                                <input type="text" name="options" class="form-input" placeholder="Option 2" required>
-                                <button type="button" class="btn-remove" aria-label="Remove option">&times;</button>
-                            </div>
-                        </div>
-                        <button type="button" id="add-option" class="btn"
-                            style="margin-top: 1rem; width: 100%; border: 1px dashed var(--primary); color: var(--primary); background: transparent;">+
-                            Add Another Option</button>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-submit">Generate FlashPoll &rarr;</button>
-                </form>
-            </div>
+    <main class="container" style="max-width: 800px; padding-top: 4rem;">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1
+                style="font-size: 3rem; margin-bottom: 1rem; background: var(--gradient-primary); -webkit-background-clip: text; color: transparent; font-family: var(--font-display);">
+                Create a FlashPoll</h1>
+            <p style="color: var(--text-muted); font-size: 1.2rem;">Engage your audience with real-time, interactive
+                polling.</p>
         </div>
-    </div>
+
+        <div class="card" style="border-radius: var(--radius-lg); padding: 3rem;">
+            <form action="/create" method="POST">
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label for="question"
+                        style="display: block; font-weight: 500; margin-bottom: 0.75rem; color: var(--text-main);">Poll
+                        Question</label>
+                    <input type="text" id="question" name="question" required class="form-input"
+                        placeholder="What's your favorite programming language?"
+                        style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label
+                        style="display: block; font-weight: 500; margin-bottom: 1rem; color: var(--text-main);">Options
+                        (Drag to reorder)</label>
+                    <div id="options-container">
+                        <div class="option-item" draggable="true">
+                            <span class="drag-handle"
+                                style="cursor: grab; color: var(--text-muted); padding: 0 0.5rem;">&#x2630;</span>
+                            <input type="text" name="options" required class="form-input" placeholder="Option 1"
+                                style="flex: 1; padding: 0.875rem;">
+                            <button type="button" class="btn btn-secondary delete-btn"
+                                style="padding: 0.5rem 1rem;">&times;</button>
+                        </div>
+                        <div class="option-item" draggable="true">
+                            <span class="drag-handle"
+                                style="cursor: grab; color: var(--text-muted); padding: 0 0.5rem;">&#x2630;</span>
+                            <input type="text" name="options" required class="form-input" placeholder="Option 2"
+                                style="flex: 1; padding: 0.875rem;">
+                            <button type="button" class="btn btn-secondary delete-btn"
+                                style="padding: 0.5rem 1rem;">&times;</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addOption()"
+                        style="width: 100%; margin-top: 1rem; border-style: dashed; padding: 1rem;">
+                        + Add Another Option
+                    </button>
+                </div>
+
+                <!-- Advanced Settings -->
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border-color);">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-main);">Advanced Settings</h3>
+
+                    <label
+                        style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; cursor: pointer;">
+                        <input type="checkbox" name="allowMultiple" value="true"
+                            style="width: 1.2rem; height: 1.2rem; cursor: pointer; accent-color: var(--primary);">
+                        <span style="color: var(--text-main); font-weight: 500;">Allow Multiple Choices</span>
+                    </label>
+
+                    <label style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <span style="color: var(--text-main); font-weight: 500;">Poll Expiration Limits</span>
+                        <select name="expiresIn" class="form-input"
+                            style="width: 100%; max-width: 300px; padding: 0.75rem;">
+                            <option value="">Never Expires (Persistent)</option>
+                            <option value="1">1 Hour</option>
+                            <option value="24">24 Hours</option>
+                            <option value="168">7 Days (1 Week)</option>
+                        </select>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; margin-top: 2rem; font-size: 1.1rem; padding: 1rem;">
+                    Create Poll
+                </button>
+            </form>
+        </div>
+    </main>
 
     <style>
         .option-item {
@@ -215,94 +84,73 @@
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 0.75rem;
-            background: rgba(var(--card-bg-rgb, 255, 255, 255), 0.5);
-            border-radius: var(--radius-md);
-            padding-right: 0.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        [data-theme='dark'] .option-item {
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        .drag-handle {
-            cursor: grab;
-            padding: 0 0.5rem 0 1rem;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-        }
-
-        .drag-handle:active {
-            cursor: grabbing;
-        }
-
-        .sortable-ghost {
-            opacity: 0.4;
-            background: var(--primary) !important;
-        }
-
-        .btn-remove {
-            background: none;
-            border: none;
-            color: var(--accent);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0 0.5rem;
-            transition: color 0.2s;
-        }
-
-        .btn-remove:hover {
-            color: #be123c;
-        }
-
-        .option-item input {
-            border: none !important;
-            background: transparent !important;
-            padding-left: 0 !important;
-            box-shadow: none !important;
+        .option-item.dragging {
+            opacity: 0.5;
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('options-container');
-            const addBtn = document.getElementById('add-option');
+        const container = document.getElementById('options-container');
 
-            // Initialize Sortable
-            new Sortable(container, {
-                handle: '.drag-handle',
-                animation: 150,
-                ghostClass: 'sortable-ghost'
-            });
+        function addOption() {
+            const item = document.createElement('div');
+            item.className = 'option-item';
+            item.draggable = true;
+            item.innerHTML = `
+      <span class="drag-handle" style="cursor: grab; color: var(--text-muted); padding: 0 0.5rem;">&#x2630;</span>
+      <input type="text" name="options" required class="form-input" placeholder="New Option" style="flex: 1; padding: 0.875rem;">
+      <button type="button" class="btn btn-secondary delete-btn" style="padding: 0.5rem 1rem;">&times;</button>
+    `;
+            container.appendChild(item);
+            attachDragEvents(item);
+        }
 
-            // Add new option
-            addBtn.addEventListener('click', () => {
-                const idx = container.children.length + 1;
-                const div = document.createElement('div');
-                div.className = 'option-item';
-                div.innerHTML = `
-                    <span class="drag-handle">☰</span>
-                    <input type="text" name="options" class="form-input" placeholder="Option ${idx}" required>
-                    <button type="button" class="btn-remove" aria-label="Remove option">&times;</button>
-                `;
-                container.appendChild(div);
-                attachRemove(div.querySelector('.btn-remove'));
-                div.querySelector('input').focus();
-            });
-
-            // Remove option
-            function attachRemove(btn) {
-                btn.addEventListener('click', (e) => {
-                    if (container.children.length > 2) {
-                        e.target.closest('.option-item').remove();
-                    } else {
-                        alert('A poll must have at least 2 options.');
-                    }
-                });
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                if (container.children.length > 2) {
+                    e.target.closest('.option-item').remove();
+                } else {
+                    alert("A poll needs at least two options.");
+                }
             }
-
-            document.querySelectorAll('.btn-remove').forEach(attachRemove);
         });
+
+        function attachDragEvents(item) {
+            item.addEventListener('dragstart', () => {
+                item.classList.add('dragging');
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+            });
+        }
+
+        document.querySelectorAll('.option-item').forEach(attachDragEvents);
+
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(container, e.clientY);
+            const dragging = document.querySelector('.dragging');
+            if (afterElement == null) {
+                container.appendChild(dragging);
+            } else {
+                container.insertBefore(dragging, afterElement);
+            }
+        });
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.option-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
     </script>
     <%- include('partials/footer') %>

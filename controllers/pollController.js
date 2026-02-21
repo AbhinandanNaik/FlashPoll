@@ -8,7 +8,7 @@ exports.getHome = (req, res) => {
 };
 
 exports.createPoll = catchAsync(async (req, res) => {
-  const { question, options } = req.body;
+  const { question, options, allowMultiple, expiresIn } = req.body;
   let optionList = [];
   if (typeof options === 'string') {
     optionList = options.split(/\r?\n/).filter((opt) => opt.trim() !== '');
@@ -20,9 +20,16 @@ exports.createPoll = catchAsync(async (req, res) => {
     throw new AppError('At least one valid option is required.', 400);
   }
 
+  let expiresAt = null;
+  if (expiresIn) {
+    expiresAt = new Date(Date.now() + parseInt(expiresIn) * 60 * 60 * 1000);
+  }
+
   const poll = await prisma.poll.create({
     data: {
       question,
+      allowMultiple: allowMultiple === 'true',
+      expiresAt,
       options: {
         create: optionList.map((text) => ({ text })),
       },
@@ -44,6 +51,10 @@ exports.getPoll = catchAsync(async (req, res, next) => {
     return next(new AppError('Poll not found with that ID', 404));
   }
 
+  // Check Expiration
+  const now = new Date();
+  const isExpired = poll.expiresAt && now > poll.expiresAt;
+
   // Integrity Check
   const clientIp = req.ip || req.connection.remoteAddress;
   const cookieName = `voted_${pollId}`;
@@ -62,23 +73,50 @@ exports.getPoll = catchAsync(async (req, res, next) => {
   const qrCodeDataUrl = await QRCode.toDataURL(url, { width: 200, margin: 1 });
   const totalVotes = poll.options.reduce((acc, opt) => acc + opt.votes, 0);
 
-  res.render('poll', { poll, options: poll.options, totalVotes, qrCodeDataUrl, url, hasVoted });
+  res.render('poll', {
+    poll,
+    options: poll.options,
+    totalVotes,
+    qrCodeDataUrl,
+    url,
+    hasVoted,
+    isExpired,
+  });
 });
 
 exports.votePoll = catchAsync(async (req, res, next) => {
-  const optionId = req.body.optionId;
+  let optionIds = req.body.optionId;
   const pollId = req.params.id;
+
+  if (!optionIds) {
+    return next(new AppError('You must select at least one option.', 400));
+  }
+
+  if (!Array.isArray(optionIds)) {
+    optionIds = [optionIds];
+  }
+
+  const poll = await prisma.poll.findUnique({ where: { id: pollId } });
+  if (!poll) {
+    return next(new AppError('Poll not found', 404));
+  }
+
+  if (poll.expiresAt && new Date() > poll.expiresAt) {
+    return next(new AppError('This poll has expired.', 403));
+  }
+
+  if (!poll.allowMultiple && optionIds.length > 1) {
+    return next(new AppError('This poll does not allow multiple selections.', 403));
+  }
 
   // Integrity Check
   const clientIp = req.ip || req.connection.remoteAddress;
   const cookieName = `voted_${pollId}`;
 
-  // Check if they already voted via cookie
   if (req.signedCookies[cookieName]) {
     return next(new AppError('You have already voted on this poll.', 403));
   }
 
-  // Check if they already voted via IP in Database
   const existingVote = await prisma.voteIP.findUnique({
     where: { pollId_ip: { pollId, ip: clientIp } },
   });
@@ -86,13 +124,12 @@ exports.votePoll = catchAsync(async (req, res, next) => {
     return next(new AppError('You have already voted on this poll from this IP address.', 403));
   }
 
-  // Register the vote locking their IP
   await prisma.voteIP.create({
     data: { pollId, ip: clientIp },
   });
 
-  await prisma.option.update({
-    where: { id: parseInt(optionId) },
+  await prisma.option.updateMany({
+    where: { id: { in: optionIds.map((id) => parseInt(id)) } },
     data: { votes: { increment: 1 } },
   });
 
@@ -104,7 +141,6 @@ exports.votePoll = catchAsync(async (req, res, next) => {
 
   req.io.to(pollId).emit('vote_update', { options: updatedPoll.options, totalVotes });
 
-  // Set signed cookie for 30 days
   res.cookie(cookieName, 'true', {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,
