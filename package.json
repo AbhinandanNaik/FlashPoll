@@ -16,7 +16,8 @@
     "dotenv": "^17.3.1",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "eslint": "^10.0.1",
