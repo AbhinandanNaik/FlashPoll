@@ -8,10 +8,33 @@ const errorHandler = require('./middlewares/errorHandler');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const xss = require('xss-clean');
+
+// === Middlewares ===
+// Security Headers
+app.use(helmet());
+
+// Enable CORS
+app.use(cors());
+
+// Rate Limiting
+const limiter = rateLimit({
+  max: 100, // Limit each IP to 100 requests per `window` (here, per hour)
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/', limiter);
+
+// View Engine & Static Assets
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Data Sanitization against XSS
+app.use(xss());
 
 // Routes
 app.use('/', pollRoutes);

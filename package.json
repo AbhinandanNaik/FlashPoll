@@ -13,10 +13,14 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^7.4.1",
+    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
     "uuid": "^13.0.0",
+    "xss-clean": "^0.1.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {
