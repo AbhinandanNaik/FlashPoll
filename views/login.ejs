@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+    <main class="container" style="max-width: 500px; padding-top: 6rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1
+                style="font-size: 2.5rem; margin-bottom: 0.5rem; font-family: var(--font-display); background: var(--gradient-primary); -webkit-background-clip: text; color: transparent;">
+                Welcome Back</h1>
+            <p style="color: var(--text-muted);">Log in to manage your premium polls.</p>
+        </div>
+
+        <div class="card" style="border-radius: var(--radius-lg); padding: 3rem;">
+            <form action="/login" method="POST">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="username"
+                        style="display: block; font-weight: 500; margin-bottom: 0.75rem;">Username</label>
+                    <input type="text" id="username" name="username" required class="form-input"
+                        placeholder="flashuser99" style="width: 100%; padding: 0.875rem;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label for="password"
+                        style="display: block; font-weight: 500; margin-bottom: 0.75rem;">Password</label>
+                    <input type="password" id="password" name="password" required class="form-input"
+                        placeholder="••••••••" style="width: 100%; padding: 0.875rem;">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Log
+                    In</button>
+            </form>
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <span style="color: var(--text-muted);">Don't have an account?</span> <a href="/register"
+                    style="color: var(--primary); font-weight: 600; text-decoration: none;">Sign up</a>
+            </div>
+        </div>
+    </main>
+    <%- include('partials/footer') %>

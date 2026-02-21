@@ -4,7 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlashPoll - Enterprise Polling</title>
+    <title>
+        <%= typeof poll !=='undefined' ? poll.question : 'FlashPoll - Enterprise Polling' %>
+    </title>
+    <meta property="og:title"
+        content="<%= typeof poll !== 'undefined' ? poll.question : 'FlashPoll - Realtime Polling' %>" />
+    <meta property="og:description"
+        content="Vote on this beautiful real-time poll instantly. See the outcomes right after." />
+    <meta property="og:type" content="website" />
     <link rel="stylesheet" href="/css/variables.css">
     <link rel="stylesheet" href="/css/style.css">
     <script>
@@ -15,16 +22,46 @@
 </head>
 
 <body>
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
-        <svg id="moonIcon" style="display: none; width: 20px; height: 20px;" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-        </svg>
-        <svg id="sunIcon" style="display: none; width: 20px; height: 20px;" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
-            </path>
-        </svg>
-    </button>
+    <header
+        style="padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); background: var(--bg-color); position: sticky; top: 0; z-index: 100;">
+        <div
+            style="font-size: 1.8rem; font-weight: 800; font-family: var(--font-display); background: var(--gradient-primary); -webkit-background-clip: text; color: transparent;">
+            <a href="/" style="text-decoration: none; color: inherit;">FlashPoll</a>
+        </div>
+        <nav style="display: flex; gap: 1.25rem; align-items: center;">
+            <% if (locals.user) { %>
+                <span
+                    style="font-weight: 500; color: var(--text-muted); margin-right: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <%= locals.user.username %>
+                </span>
+                <a href="/dashboard" class="btn"
+                    style="background: transparent; border: 2px solid var(--border-color); color: var(--text-main); font-weight: 500; padding: 0.5rem 1rem;">Dashboard</a>
+                <a href="/logout" class="btn btn-secondary"
+                    style="background: transparent; border: none; color: var(--text-muted); font-weight: 500; padding: 0.5rem 1rem;">Logout</a>
+                <% } else { %>
+                    <a href="/login" class="btn"
+                        style="background: transparent; color: var(--text-main); font-weight: 600; padding: 0.5rem 1rem;">Login</a>
+                    <a href="/register" class="btn btn-primary" style="padding: 0.6rem 1.25rem;">Sign Up</a>
+                    <% } %>
+
+                        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme"
+                            style="margin-left: 1rem; position: relative; inset: auto; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <svg id="moonIcon" style="display: none; width: 20px; height: 20px;" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                                </path>
+                            </svg>
+                            <svg id="sunIcon" style="display: none; width: 20px; height: 20px;" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
+                            </svg>
+                        </button>
+        </nav>
+    </header>

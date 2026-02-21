@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const pollRoutes = require('./routes/pollRoutes');
+const authRoutes = require('./routes/authRoutes');
+const authController = require('./controllers/authController');
 const AppError = require('./utils/AppError');
 const errorHandler = require('./middlewares/errorHandler');
 const http = require('http');
@@ -31,6 +33,9 @@ app.use(helmet());
 // Cookie Parser
 app.use(cookieParser(process.env.COOKIE_SECRET || 'flashpoll-enterprise-secret-key'));
 
+// User Check globally via JWT
+app.use(authController.checkUser);
+
 // Enable CORS
 app.use(cors());
 
@@ -51,6 +56,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(xss());
 
 // Routes
+app.use('/', authRoutes);
 app.use('/', pollRoutes);
 
 // Unhandled Route Handler

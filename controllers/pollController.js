@@ -30,6 +30,7 @@ exports.createPoll = catchAsync(async (req, res) => {
       question,
       allowMultiple: allowMultiple === 'true',
       expiresAt,
+      creatorId: req.user ? req.user.id : null,
       options: {
         create: optionList.map((text) => ({ text })),
       },
