@@ -1,20 +1,18 @@
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-// Creates a file named 'polls.db' in your project root
-const db = new sqlite3.Database('./polls.db', (err) => {
+const dbPath = path.resolve(__dirname, '../polls.db');
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) console.error(err.message);
     else console.log('Connected to the SQLite database.');
 });
 
-// Initialize Tables
 db.serialize(() => {
-    // Table for the Poll Question
     db.run(`CREATE TABLE IF NOT EXISTS polls (
         id TEXT PRIMARY KEY,
         question TEXT NOT NULL
     )`);
 
-    // Table for Options (Foreign Key linked to Polls)
     db.run(`CREATE TABLE IF NOT EXISTS options (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         poll_id TEXT NOT NULL,
