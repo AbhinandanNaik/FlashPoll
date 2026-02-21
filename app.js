@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const xss = require('xss-clean');
+
 const cookieParser = require('cookie-parser');
 
 // === Middlewares ===
@@ -52,15 +52,14 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Data Sanitization against XSS
-app.use(xss());
+
 
 // Routes
 app.use('/', authRoutes);
 app.use('/', pollRoutes);
 
 // Unhandled Route Handler
-app.all('*', (req, res, next) => {
+app.all(/(.*)/, (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
