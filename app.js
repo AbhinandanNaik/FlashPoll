@@ -4,9 +4,19 @@ const bodyParser = require('body-parser');
 const pollRoutes = require('./routes/pollRoutes');
 const AppError = require('./utils/AppError');
 const errorHandler = require('./middlewares/errorHandler');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 const PORT = process.env.PORT || 3000;
+
+// Inject io into request
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 const helmet = require('helmet');
 const cors = require('cors');
@@ -47,6 +57,13 @@ app.all('*', (req, res, next) => {
 // Global Error Handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+// Socket.io Real-time Handlers
+io.on('connection', (socket) => {
+  socket.on('join_poll', (pollId) => {
+    socket.join(pollId);
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

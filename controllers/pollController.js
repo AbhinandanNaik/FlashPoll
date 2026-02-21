@@ -56,5 +56,14 @@ exports.votePoll = catchAsync(async (req, res) => {
     data: { votes: { increment: 1 } },
   });
 
+  // Fetch updated poll state for realtime broadcast
+  const updatedPoll = await prisma.poll.findUnique({
+    where: { id: pollId },
+    include: { options: true },
+  });
+  const totalVotes = updatedPoll.options.reduce((acc, opt) => acc + opt.votes, 0);
+
+  req.io.to(pollId).emit('vote_update', { options: updatedPoll.options, totalVotes });
+
   res.redirect(`/poll/${pollId}`);
 });

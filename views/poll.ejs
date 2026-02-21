@@ -147,7 +147,7 @@
                             <span class="option-text">
                                 <%= opt.text %>
                             </span>
-                            <span class="option-votes">
+                            <span class="option-votes" id="vote-count-<%= opt.id %>">
                                 <%= opt.votes %> votes
                             </span>
                         </label>
@@ -161,4 +161,21 @@
             </form>
         </div>
     </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const pollId = "<%= poll.id %>";
+
+        socket.emit('join_poll', pollId);
+
+        socket.on('vote_update', (data) => {
+            document.querySelector('.poll-meta').innerText = `Total Votes: ${data.totalVotes}`;
+            data.options.forEach(opt => {
+                const voteSpan = document.getElementById(`vote-count-${opt.id}`);
+                if (voteSpan) voteSpan.innerText = `${opt.votes} votes`;
+            });
+        });
+    </script>
+
     <%- include('partials/footer') %>
