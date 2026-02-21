@@ -8,7 +8,12 @@ exports.getHome = (req, res) => {
 
 exports.createPoll = catchAsync(async (req, res) => {
   const { question, options } = req.body;
-  const optionList = options.split(/\r?\n/).filter((opt) => opt.trim() !== '');
+  let optionList = [];
+  if (typeof options === 'string') {
+    optionList = options.split(/\r?\n/).filter((opt) => opt.trim() !== '');
+  } else if (Array.isArray(options)) {
+    optionList = options.filter((opt) => opt.trim() !== '');
+  }
 
   if (optionList.length === 0) {
     throw new AppError('At least one valid option is required.', 400);

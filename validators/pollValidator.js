@@ -3,7 +3,10 @@ const { z } = require('zod');
 const createPollSchema = z.object({
   body: z.object({
     question: z.string().min(5, 'Question must be at least 5 characters long'),
-    options: z.string().min(1, 'Options cannot be empty'),
+    options: z.union([
+      z.string().min(1, 'Options cannot be empty'),
+      z.array(z.string()).min(2, 'At least 2 options required'),
+    ]),
   }),
 });
 

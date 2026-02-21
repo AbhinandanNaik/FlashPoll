@@ -186,15 +186,123 @@
                             autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="options" class="form-label">Poll Options</label>
-                        <textarea id="options" name="options" rows="4" class="form-textarea"
-                            placeholder="React&#10;Vue.js&#10;Svelte&#10;Angular" required></textarea>
-                        <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Enter one option
-                            per line.</small>
+                        <label class="form-label">Poll Options</label>
+                        <div id="options-container">
+                            <div class="option-item">
+                                <span class="drag-handle">☰</span>
+                                <input type="text" name="options" class="form-input" placeholder="Option 1" required>
+                                <button type="button" class="btn-remove" aria-label="Remove option">&times;</button>
+                            </div>
+                            <div class="option-item">
+                                <span class="drag-handle">☰</span>
+                                <input type="text" name="options" class="form-input" placeholder="Option 2" required>
+                                <button type="button" class="btn-remove" aria-label="Remove option">&times;</button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-option" class="btn"
+                            style="margin-top: 1rem; width: 100%; border: 1px dashed var(--primary); color: var(--primary); background: transparent;">+
+                            Add Another Option</button>
                     </div>
                     <button type="submit" class="btn btn-primary btn-submit">Generate FlashPoll &rarr;</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <style>
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            background: rgba(var(--card-bg-rgb, 255, 255, 255), 0.5);
+            border-radius: var(--radius-md);
+            padding-right: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        [data-theme='dark'] .option-item {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .drag-handle {
+            cursor: grab;
+            padding: 0 0.5rem 0 1rem;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+            background: var(--primary) !important;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .btn-remove:hover {
+            color: #be123c;
+        }
+
+        .option-item input {
+            border: none !important;
+            background: transparent !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('options-container');
+            const addBtn = document.getElementById('add-option');
+
+            // Initialize Sortable
+            new Sortable(container, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost'
+            });
+
+            // Add new option
+            addBtn.addEventListener('click', () => {
+                const idx = container.children.length + 1;
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.innerHTML = `
+                    <span class="drag-handle">☰</span>
+                    <input type="text" name="options" class="form-input" placeholder="Option ${idx}" required>
+                    <button type="button" class="btn-remove" aria-label="Remove option">&times;</button>
+                `;
+                container.appendChild(div);
+                attachRemove(div.querySelector('.btn-remove'));
+                div.querySelector('input').focus();
+            });
+
+            // Remove option
+            function attachRemove(btn) {
+                btn.addEventListener('click', (e) => {
+                    if (container.children.length > 2) {
+                        e.target.closest('.option-item').remove();
+                    } else {
+                        alert('A poll must have at least 2 options.');
+                    }
+                });
+            }
+
+            document.querySelectorAll('.btn-remove').forEach(attachRemove);
+        });
+    </script>
     <%- include('partials/footer') %>
