@@ -28,7 +28,20 @@ const cookieParser = require('cookie-parser');
 
 // === Middlewares ===
 // Security Headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'", "ws:", "wss:"],
+      },
+    },
+  })
+);
 
 // Cookie Parser
 app.use(cookieParser(process.env.COOKIE_SECRET || 'flashpoll-enterprise-secret-key'));

@@ -41,7 +41,7 @@
                                 style="padding: 0.5rem 1rem;">&times;</button>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-secondary" onclick="addOption()"
+                    <button type="button" id="add-option-btn" class="btn btn-secondary"
                         style="width: 100%; margin-top: 1rem; border-style: dashed; padding: 1rem;">
                         + Add Another Option
                     </button>
@@ -94,6 +94,7 @@
 
     <script>
         const container = document.getElementById('options-container');
+        document.getElementById('add-option-btn').addEventListener('click', addOption);
 
         function addOption() {
             const item = document.createElement('div');
